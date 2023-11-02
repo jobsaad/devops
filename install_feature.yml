@@ -1,0 +1,15 @@
+---
+- hosts: all
+  become: true
+  tasks: 
+  - name: "install apache package"
+    apt: 
+      name: apache2
+  - name: Enable service apache2, and not touch the state
+    ansible.builtin.service:
+      name: apache2
+      enabled: yes
+  - name: Enable service apache2, and not touch the state
+    ansible.builtin.service:
+      name: apache2
+      state: started 
