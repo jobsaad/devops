@@ -3,13 +3,32 @@
   become: true
   tasks: 
   - name: "install apache package"
-    apt: 
-      name: apache2
+    package: 
+      name: 
+      - nginx
+      - samba
+    when: ansible_hostname == "{{host_server}}"    
   - name: Enable service apache2, and not touch the state
     ansible.builtin.service:
-      name: apache2
+      name: nginx
       enabled: yes
+    when: ansible_hostname == "{{host_server}}"
   - name: Enable service apache2, and not touch the state
     ansible.builtin.service:
-      name: apache2
+      name: nginx
       state: started 
+    when: ansible_hostname == "{{host_server}}"
+- hosts : file_server
+  become: true
+  tasks:
+  - name: copy file to  file servers
+    tags: file-servers
+    copy:
+     src: ./webpage/index_default.html
+     dest: /var/www/html/
+     mode: 0644
+     owner: root
+     group: root
+
+
+
