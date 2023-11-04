@@ -7,7 +7,24 @@
       name: 
       - nginx
       - samba
-    when: ansible_hostname == "{{host_server}}"    
+    when: ansible_hostname == "{{host_server}}"
+  - name: create mcsadmin 
+    become: true
+    user: 
+      name: mcsadmin
+      groups: sudo
+  - name: add ssh key
+    authorized_key:
+      user: mcsadmin
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH839jWj0wcMtvtuabnZTyt8yVi4cTiKgJbLwFNWA97I jobsaad@gmail.com"    
+
+  - name: copy sidoer file to user folder 
+    copy:
+      src: ./mcsadmin_sudoer
+      dest: /etc/sudoers.d/mcsadmin
+      owner: mcsadmin
+      mode:  0644  
+
   - name: Enable service apache2, and not touch the state
     ansible.builtin.service:
       name: nginx
@@ -29,6 +46,38 @@
      mode: 0644
      owner: root
      group: root
+  - name: change line in file 
+    tags: file-servers
+    become: true 
+    lineinfile:
+      path: /var/www/html/index_default.html
+      regex: '^construction'
+      line:  contact email admin@vxlab.local
+    register: state_nginx
+  - name: restart service nginx 
+    tags: file-servers 
+    service:
+      name: nginx
+      state: restarted
+    when: state_nginx.changed       
+- hosts:  mcs_admin
+  become: true
+  tasks:
+  - name: install unzip tools
+    tags: terraform
+    package:
+      name: unzip
+  - name : install terraform tools at admin workstation
+    tags: terraform
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/1.6.3/terraform_1.6.3_linux_386.zip
+      dest: /usr/local/bin/
+      remote_src: yes
+      mode: 0644
+      owner: root
+      group: root
+
+
 
 
 

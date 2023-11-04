@@ -2,3 +2,9 @@ vxworker01 host_server=vxworker03
 vxworker02 host_server=vxworker03
 [file_server]
 vxworker03 host_server=vxworker03
+
+[mcs_admin]
+vxworker01
+vxworker02
+vxworker03
+
